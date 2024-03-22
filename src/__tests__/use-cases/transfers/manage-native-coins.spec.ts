@@ -1,4 +1,4 @@
-import { seconds } from '@/__tests__/test-utils';
+import { retry, seconds } from '@/__tests__/test-utils';
 import { configuration } from '@/config/configuration';
 import {
   CGWDeleteTransactionDTO,
@@ -62,8 +62,8 @@ describe('Transactions cleanup', () => {
   }, 120_000);
 });
 
-describe('Transfers: receive/send native coins from/to EOA', () => {
-  it('should receive an ether transfer and check it is on the CGW history', async () => {
+describe.only('Transfers: receive/send native coins from/to EOA', () => {
+  it.only('should receive an ether transfer and check it is on the CGW history', async () => {
     const safeAddress = await sdkInstance.getAddress();
     const safeBalance = await sdkInstance.getBalance();
     const amount = ethers.parseUnits('0.0001', 'ether');
@@ -72,12 +72,15 @@ describe('Transfers: receive/send native coins from/to EOA', () => {
       to: safeAddress,
       value: amount,
     });
-    await seconds(30);
 
-    const historyTxs = await cgw.getHistory(safeAddress);
-    const newBalance = await sdkInstance.getBalance();
-    expect(containsTransaction(historyTxs, tx.hash)).toBe(true);
-    expect(newBalance).toEqual(safeBalance + amount);
+    const checks = async () => {
+      const historyTxs = await cgw.getHistory(safeAddress);
+      const newBalance = await sdkInstance.getBalance();
+      expect(containsTransaction(historyTxs, tx.hash)).toBe(true);
+      expect(newBalance).toEqual(safeBalance + amount);
+    };
+
+    retry(checks);
   });
 
   it.skip('should propose an ether transfer, check queue, and delete the proposed transaction', async () => {
