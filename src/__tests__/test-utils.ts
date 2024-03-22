@@ -23,7 +23,7 @@ export async function retry(
       return await fn();
     } catch (error) {
       if (attempt >= maxAttempts) {
-        logger.error({ msg: 'Exhausted retries', attempt, maxAttempts });
+        logger.error({ msg: 'Exhausted retries', delayMs, maxAttempts });
         throw error;
       }
     }
