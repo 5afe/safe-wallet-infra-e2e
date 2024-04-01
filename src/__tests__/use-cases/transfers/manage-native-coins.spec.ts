@@ -38,7 +38,7 @@ beforeAll(async () => {
   cgw = new ClientGatewayClient();
 });
 
-describe.only('Transactions cleanup', () => {
+describe('Transactions cleanup', () => {
   it('should execute pending transactions', async () => {
     const safeAddress = await sdkInstance.getAddress();
     const pending = await apiKit.getPendingTransactions(safeAddress);
