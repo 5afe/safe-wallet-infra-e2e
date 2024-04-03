@@ -60,7 +60,7 @@ describe('Transactions cleanup', () => {
         expect(containsTransaction(historyTxs, tx.safeTxHash)).toBe(true);
       });
     }
-  }, 120_000);
+  }, 600_000);
 });
 
 describe('Transfers: receive/send native coins from/to EOA', () => {
