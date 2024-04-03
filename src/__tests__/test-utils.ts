@@ -14,8 +14,8 @@ export async function milliseconds(milliseconds: number): Promise<void> {
  */
 export async function retry(
   fn: () => void,
-  maxAttempts: number = 60,
-  delayMs: number = 1000,
+  maxAttempts: number = 120,
+  delayMs: number = 2000,
 ) {
   let attempt = 1;
   const execute = async () => {
