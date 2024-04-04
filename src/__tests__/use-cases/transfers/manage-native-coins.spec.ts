@@ -6,6 +6,7 @@ import {
   ClientGatewayClient,
 } from '@/datasources/cgw/cgw-client';
 import { containsTransaction } from '@/datasources/cgw/cgw-utils';
+import { SafeType } from '@/domain/safes/entities/safe-type';
 import { SafesRepository } from '@/domain/safes/safes-repository';
 import { faker } from '@faker-js/faker';
 import SafeApiKit from '@safe-global/api-kit';
@@ -31,10 +32,12 @@ beforeAll(async () => {
     new ethers.InfuraProvider('sepolia', process.env.INFURA_API_KEY),
   );
 
-  sdkInstance = await new SafesRepository(privateKeys[0]).getSdkInstance();
-  secondSdkInstance = await new SafesRepository(
-    privateKeys[1],
-  ).getSdkInstance();
+  sdkInstance = await new SafesRepository(privateKeys[0]).getSdkInstance(
+    SafeType.PRIMARY,
+  );
+  secondSdkInstance = await new SafesRepository(privateKeys[1]).getSdkInstance(
+    SafeType.PRIMARY,
+  );
   cgw = new ClientGatewayClient();
 });
 
