@@ -42,6 +42,38 @@ export interface CGWDeleteTransactionDTO {
   signature: string;
 }
 
+export interface CGWCreateDelegateDTO {
+  chainId: string;
+  delegate: string;
+  delegator: string;
+  safe: string | null;
+  signature: string;
+  label: string;
+}
+
+export interface CGWDeleteDelegateDTO {
+  chainId: string;
+  delegate: string;
+  delegator: string | null;
+  safe: string | null;
+  signature: string;
+}
+
+export interface CGWGetDelegateDTO {
+  chainId: string;
+  delegate: string | null;
+  delegator: string | null;
+  safe: string | null;
+  label: string | null;
+}
+
+export interface CGWDelegate {
+  safe: string;
+  delegate: string;
+  delegator: string;
+  label: string;
+}
+
 // TODO: move 11155111 chain id to configuration.
 
 export class ClientGatewayClient {
@@ -50,6 +82,8 @@ export class ClientGatewayClient {
   constructor() {
     this.baseUri = configuration.clientGateway.baseUri;
   }
+
+  // Heath check endpoints
 
   async getLiveness(): Promise<{ status: string }> {
     const { data } = await httpClient.get(`${this.baseUri}/health/live`);
@@ -61,6 +95,8 @@ export class ClientGatewayClient {
     return data;
   }
 
+  // About endpoints
+
   async getAbout(): Promise<{
     name: string;
     version: string | null;
@@ -69,6 +105,8 @@ export class ClientGatewayClient {
     const { data } = await httpClient.get(`${this.baseUri}/about`);
     return data;
   }
+
+  // Transaction endpoints
 
   async getHistory(safeAddress: string): Promise<CGWTransactionItem[]> {
     const { data } = await httpClient.get(
@@ -125,5 +163,39 @@ export class ClientGatewayClient {
       `${this.baseUri}/v1/chains/11155111/transactions/${safeTxHash}`,
       { data: deleteTransactionDto },
     );
+  }
+
+  // Delegates endpoints
+
+  async createDelegate(
+    createDelegateDTO: CGWCreateDelegateDTO,
+  ): Promise<CGWDelegate> {
+    const url = `${this.baseUri}/v2/chains/11155111/delegates`;
+    try {
+      const { data } = await httpClient.post(url, createDelegateDTO);
+      return data;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
+  async deleteDelegate(deleteDelegateDTO: CGWDeleteDelegateDTO): Promise<void> {
+    const url = `${this.baseUri}/v2/chains/11155111/delegates/${deleteDelegateDTO.delegate}`;
+    await httpClient.delete(url, { data: deleteDelegateDTO });
+  }
+
+  async getDelegates(
+    getDelegateDTO: CGWGetDelegateDTO,
+  ): Promise<CGWDelegate[]> {
+    const url = new URL(`${this.baseUri}/v2/chains/11155111/delegates`);
+    const { safe, delegate, delegator, label } = getDelegateDTO;
+    if (safe) url.searchParams.append('safe', safe);
+    if (delegate) url.searchParams.append('delegate', delegate);
+    if (delegator) url.searchParams.append('delegator', delegator);
+    if (label) url.searchParams.append('label', label);
+
+    const { data } = await httpClient.get(url.toString());
+    return data.results;
   }
 }
