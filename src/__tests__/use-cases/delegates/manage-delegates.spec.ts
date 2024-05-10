@@ -1,6 +1,7 @@
 import { configuration } from '@/config/configuration';
 import {
   CGWCreateDelegateDTO,
+  CGWDeleteDelegateDTO,
   ClientGatewayClient,
 } from '@/datasources/cgw/cgw-client';
 import { SafeType } from '@/domain/safes/entities/safe-type';
@@ -38,9 +39,171 @@ describe('Delegates: list/create/delete Safe delegates', () => {
       label: `Test Delegate ${Date.now()}`,
     };
 
+    const delegatesBefore = await cgw.getDelegates({
+      chainId: SEPOLIA_CHAIN_ID,
+      delegator: walletAddresses[0],
+    });
+
+    expect(delegatesBefore).toEqual(
+      expect.not.arrayContaining([
+        {
+          safe: safeAddress,
+          delegator: walletAddresses[0],
+          delegate: walletAddresses[1],
+          label: createDelegateDto.label,
+        },
+      ]),
+    );
+
     await cgw.createDelegate(createDelegateDto);
 
-    // TODO: get the list of delegates and assert the delegate was added.
+    const delegatesAfter = await cgw.getDelegates({
+      chainId: SEPOLIA_CHAIN_ID,
+      delegator: walletAddresses[0],
+    });
+
+    expect(delegatesAfter).toEqual(
+      expect.arrayContaining([
+        {
+          safe: safeAddress,
+          delegator: walletAddresses[0],
+          delegate: walletAddresses[1],
+          label: createDelegateDto.label,
+        },
+      ]),
+    );
+  });
+
+  it('create delegate and delete it by delegator', async () => {
+    const safeAddress = await primarySafeSdkInstance.getAddress();
+    const createDelegateDto: CGWCreateDelegateDTO = {
+      chainId: SEPOLIA_CHAIN_ID,
+      delegate: walletAddresses[1],
+      delegator: walletAddresses[0],
+      safe: safeAddress,
+      signature: await buildSignature(walletAddresses[1]),
+      label: `Test Delegate ${Date.now()}`,
+    };
+
+    const delegatesBefore = await cgw.getDelegates({
+      chainId: SEPOLIA_CHAIN_ID,
+      delegator: walletAddresses[0],
+    });
+
+    expect(delegatesBefore).toEqual(
+      expect.not.arrayContaining([
+        {
+          safe: safeAddress,
+          delegator: walletAddresses[0],
+          delegate: walletAddresses[1],
+          label: createDelegateDto.label,
+        },
+      ]),
+    );
+
+    await cgw.createDelegate(createDelegateDto);
+
+    const delegatesAfter = await cgw.getDelegates({
+      chainId: SEPOLIA_CHAIN_ID,
+      delegator: walletAddresses[0],
+    });
+
+    expect(delegatesAfter).toEqual(
+      expect.arrayContaining([
+        {
+          safe: safeAddress,
+          delegator: walletAddresses[0],
+          delegate: walletAddresses[1],
+          label: createDelegateDto.label,
+        },
+      ]),
+    );
+
+    const deleteDelegateDto: CGWDeleteDelegateDTO = {
+      chainId: SEPOLIA_CHAIN_ID,
+      delegate: walletAddresses[1],
+      delegator: walletAddresses[0],
+      signature: await buildSignature(walletAddresses[1]),
+    };
+
+    await cgw.deleteDelegate(deleteDelegateDto);
+
+    expect(delegatesBefore).toEqual(
+      expect.not.arrayContaining([
+        {
+          safe: safeAddress,
+          delegator: walletAddresses[0],
+          delegate: walletAddresses[1],
+          label: createDelegateDto.label,
+        },
+      ]),
+    );
+  });
+
+  it('create delegate and delete it by Safe address', async () => {
+    const safeAddress = await primarySafeSdkInstance.getAddress();
+    const createDelegateDto: CGWCreateDelegateDTO = {
+      chainId: SEPOLIA_CHAIN_ID,
+      delegate: walletAddresses[1],
+      delegator: walletAddresses[0],
+      safe: safeAddress,
+      signature: await buildSignature(walletAddresses[1]),
+      label: `Test Delegate ${Date.now()}`,
+    };
+
+    const delegatesBefore = await cgw.getDelegates({
+      chainId: SEPOLIA_CHAIN_ID,
+      delegator: walletAddresses[0],
+    });
+
+    expect(delegatesBefore).toEqual(
+      expect.not.arrayContaining([
+        {
+          safe: safeAddress,
+          delegator: walletAddresses[0],
+          delegate: walletAddresses[1],
+          label: createDelegateDto.label,
+        },
+      ]),
+    );
+
+    await cgw.createDelegate(createDelegateDto);
+
+    const delegatesAfter = await cgw.getDelegates({
+      chainId: SEPOLIA_CHAIN_ID,
+      delegator: walletAddresses[0],
+    });
+
+    expect(delegatesAfter).toEqual(
+      expect.arrayContaining([
+        {
+          safe: safeAddress,
+          delegator: walletAddresses[0],
+          delegate: walletAddresses[1],
+          label: createDelegateDto.label,
+        },
+      ]),
+    );
+
+    const deleteDelegateDto: CGWDeleteDelegateDTO = {
+      chainId: SEPOLIA_CHAIN_ID,
+      delegate: walletAddresses[1],
+      safe: safeAddress,
+      signature: await buildSignature(walletAddresses[1]),
+    };
+
+    await cgw.deleteDelegate(deleteDelegateDto);
+
+    expect(delegatesBefore).toEqual(
+      expect.not.arrayContaining([
+        {
+          safe: safeAddress,
+          delegator: walletAddresses[0],
+          delegate: walletAddresses[1],
+          label: createDelegateDto.label,
+        },
+      ]),
+    );
   });
 });
 
