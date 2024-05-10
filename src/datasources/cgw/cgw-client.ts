@@ -46,7 +46,7 @@ export interface CGWCreateDelegateDTO {
   chainId: string;
   delegate: string;
   delegator: string;
-  safe: string | null;
+  safe?: string;
   signature: string;
   label: string;
 }
@@ -54,17 +54,17 @@ export interface CGWCreateDelegateDTO {
 export interface CGWDeleteDelegateDTO {
   chainId: string;
   delegate: string;
-  delegator?: string | null;
-  safe?: string | null;
+  delegator?: string;
+  safe?: string;
   signature: string;
 }
 
 export interface CGWGetDelegateDTO {
   chainId: string;
-  delegate?: string | null;
-  delegator?: string | null;
-  safe?: string | null;
-  label?: string | null;
+  delegate?: string;
+  delegator?: string;
+  safe?: string;
+  label?: string;
 }
 
 export interface CGWDelegate {
