@@ -1,11 +1,12 @@
 import 'dotenv/config';
 
 export const configuration = {
+  chain: {
+    chainId: '11155111',
+    name: 'sepolia',
+  },
   clientGateway: {
     baseUri: 'https://safe-client.staging.5afe.dev',
-  },
-  transactionService: {
-    baseUri: 'https://safe-transaction-sepolia.staging.5afe.dev/api',
   },
   privateKeys: [
     process.env.PRIVATE_KEY as `0x${string}`,
@@ -14,6 +15,9 @@ export const configuration = {
   ],
   rpc: {
     apiKey: process.env.INFURA_API_KEY,
+  },
+  transactionService: {
+    baseUri: 'https://safe-transaction-sepolia.staging.5afe.dev/api',
   },
   walletAddresses: [
     process.env.WALLET_ADDRESS as `0x${string}`,

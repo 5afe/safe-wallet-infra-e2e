@@ -78,9 +78,11 @@ export interface CGWDelegate {
 
 export class ClientGatewayClient {
   private readonly baseUri: string;
+  private readonly chainId: string;
 
   constructor() {
     this.baseUri = configuration.clientGateway.baseUri;
+    this.chainId = configuration.chain.chainId;
   }
 
   // Heath check endpoints
@@ -110,21 +112,21 @@ export class ClientGatewayClient {
 
   async getHistory(safeAddress: string): Promise<CGWTransactionItem[]> {
     const { data } = await httpClient.get(
-      `${this.baseUri}/v1/chains/11155111/safes/${safeAddress}/transactions/history`,
+      `${this.baseUri}/v1/chains/${this.chainId}/safes/${safeAddress}/transactions/history`,
     );
     return data.results.filter((i) => i.type === 'TRANSACTION');
   }
 
   async getNonces(safeAddress: string): Promise<CGWNoncesResponse> {
     const { data } = await httpClient.get(
-      `${this.baseUri}/v1/chains/11155111/safes/${safeAddress}/nonces`,
+      `${this.baseUri}/v1/chains/${this.chainId}/safes/${safeAddress}/nonces`,
     );
     return data;
   }
 
   async getQueue(safeAddress: string): Promise<CGWTransactionItem[]> {
     const { data } = await httpClient.get(
-      `${this.baseUri}/v1/chains/11155111/safes/${safeAddress}/transactions/queued`,
+      `${this.baseUri}/v1/chains/${this.chainId}/safes/${safeAddress}/transactions/queued`,
     );
     return data.results.filter((i) => i.type === 'TRANSACTION');
   }
@@ -135,7 +137,7 @@ export class ClientGatewayClient {
   ): Promise<CGWTransaction> {
     try {
       const { data } = await httpClient.post(
-        `${this.baseUri}/v1/chains/11155111/transactions/${safeTxHash}/confirmations`,
+        `${this.baseUri}/v1/chains/${this.chainId}/transactions/${safeTxHash}/confirmations`,
         { signedSafeTxHash: signature.data },
       );
       return data;
@@ -149,7 +151,7 @@ export class ClientGatewayClient {
     proposeTransactionDto: CGWProposeTransactionDTO,
   ): Promise<CGWTransaction> {
     const { data } = await httpClient.post(
-      `${this.baseUri}/v1/chains/11155111/transactions/${safeAddress}/propose`,
+      `${this.baseUri}/v1/chains/${this.chainId}/transactions/${safeAddress}/propose`,
       proposeTransactionDto,
     );
     return data;
@@ -160,7 +162,7 @@ export class ClientGatewayClient {
     deleteTransactionDto: CGWDeleteTransactionDTO,
   ): Promise<void> {
     await httpClient.delete(
-      `${this.baseUri}/v1/chains/11155111/transactions/${safeTxHash}`,
+      `${this.baseUri}/v1/chains/${this.chainId}/transactions/${safeTxHash}`,
       { data: deleteTransactionDto },
     );
   }

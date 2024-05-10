@@ -1,8 +1,9 @@
 import { Block, ethers } from 'ethers';
+import { configuration } from '@/config/configuration';
 
 describe('Blockchain read-only', () => {
   const provider = new ethers.InfuraProvider(
-    'sepolia',
+    configuration.chain.name,
     process.env.INFURA_API_KEY,
   );
 
