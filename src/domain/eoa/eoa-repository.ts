@@ -9,7 +9,10 @@ export class EOARepository {
   private readonly refillThreshold = 0.01;
 
   constructor() {
-    this.provider = new ethers.InfuraProvider('sepolia', INFURA_API_KEY);
+    this.provider = new ethers.InfuraProvider(
+      configuration.chain.name,
+      INFURA_API_KEY,
+    );
   }
 
   async equilibrateBalances(): Promise<void> {

@@ -29,7 +29,10 @@ beforeAll(async () => {
   });
   eoaSigner = new ethers.Wallet(
     privateKeys[0],
-    new ethers.InfuraProvider('sepolia', process.env.INFURA_API_KEY),
+    new ethers.InfuraProvider(
+      configuration.chain.name,
+      process.env.INFURA_API_KEY,
+    ),
   );
   primarySafeSdkInstance = await new SafesRepository(
     privateKeys[0],

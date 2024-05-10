@@ -17,7 +17,10 @@ export class SafesRepository {
   private readonly signers: Wallet[];
 
   constructor(mainPrivateKey: `0x${string}`) {
-    this.provider = new ethers.InfuraProvider('sepolia', INFURA_API_KEY);
+    this.provider = new ethers.InfuraProvider(
+      configuration.chain.name,
+      INFURA_API_KEY,
+    );
     this.adapter = new EthersAdapter({
       ethers,
       signerOrProvider: new ethers.Wallet(mainPrivateKey, this.provider),
