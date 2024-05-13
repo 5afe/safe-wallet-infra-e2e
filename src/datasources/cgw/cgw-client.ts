@@ -74,8 +74,6 @@ export interface CGWDelegate {
   label: string;
 }
 
-// TODO: move 11155111 chain id to configuration.
-
 export class ClientGatewayClient {
   private readonly baseUri: string;
   private readonly chainId: string;
@@ -172,7 +170,8 @@ export class ClientGatewayClient {
   async createDelegate(
     createDelegateDTO: CGWCreateDelegateDTO,
   ): Promise<CGWDelegate> {
-    const url = `${this.baseUri}/v2/chains/11155111/delegates`;
+    const { chainId } = configuration.chain;
+    const url = `${this.baseUri}/v2/chains/${chainId}/delegates`;
     try {
       const { data } = await httpClient.post(url, createDelegateDTO);
       return data;
@@ -183,14 +182,16 @@ export class ClientGatewayClient {
   }
 
   async deleteDelegate(deleteDelegateDTO: CGWDeleteDelegateDTO): Promise<void> {
-    const url = `${this.baseUri}/v2/chains/11155111/delegates/${deleteDelegateDTO.delegate}`;
+    const { chainId } = configuration.chain;
+    const url = `${this.baseUri}/v2/chains/${chainId}/delegates/${deleteDelegateDTO.delegate}`;
     await httpClient.delete(url, { data: deleteDelegateDTO });
   }
 
   async getDelegates(
     getDelegateDTO: CGWGetDelegateDTO,
   ): Promise<CGWDelegate[]> {
-    const url = new URL(`${this.baseUri}/v2/chains/11155111/delegates`);
+    const { chainId } = configuration.chain;
+    const url = new URL(`${this.baseUri}/v2/chains/${chainId}/delegates`);
     const { safe, delegate, delegator, label } = getDelegateDTO;
     if (safe) url.searchParams.append('safe', safe);
     if (delegate) url.searchParams.append('delegate', delegate);

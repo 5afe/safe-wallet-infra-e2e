@@ -8,42 +8,43 @@ import Safe, {
 } from '@safe-global/protocol-kit';
 import { Provider, Wallet, ethers } from 'ethers';
 
-const { privateKeys } = configuration;
-const { INFURA_API_KEY } = process.env;
-
 export class SafesRepository {
   private readonly provider: Provider;
   private readonly adapter: EthersAdapter;
   private readonly signers: Wallet[];
 
   constructor(mainPrivateKey: `0x${string}`) {
-    this.provider = new ethers.InfuraProvider(
-      configuration.chain.name,
-      INFURA_API_KEY,
-    );
-    this.adapter = new EthersAdapter({
-      ethers,
-      signerOrProvider: new ethers.Wallet(mainPrivateKey, this.provider),
-    });
+    const { chain, rpc, privateKeys } = configuration;
+    this.provider = new ethers.InfuraProvider(chain.name, rpc.apiKey);
+    const signerOrProvider = new ethers.Wallet(mainPrivateKey, this.provider);
+    this.adapter = new EthersAdapter({ ethers, signerOrProvider });
     this.signers = privateKeys.map((pk) => new Wallet(pk, this.provider));
   }
 
   async getSdkInstance(safeType: SafeType): Promise<Safe> {
     const safeAccountConfig = this.getSafeAccountConfig(safeType);
     const safeAddress = await this.getSafeAddress(safeAccountConfig);
-    return Safe.create({
-      ethAdapter: this.adapter,
-      safeAddress,
-    });
+    return Safe.create({ ethAdapter: this.adapter, safeAddress });
+  }
+
+  private getPrimarySafeAccountConfig(): SafeAccountConfig {
+    return {
+      owners: this.signers.map((s) => s.address),
+      threshold: 2,
+    };
+  }
+
+  private getSecondarySafeAccountConfig(): SafeAccountConfig {
+    return {
+      owners: this.signers.slice(1).map((s) => s.address),
+      threshold: 1,
+    };
   }
 
   private getSafeAccountConfig(safeType: SafeType): SafeAccountConfig {
     return safeType === SafeType.PRIMARY
-      ? { owners: this.signers.map((s) => s.address), threshold: 2 }
-      : {
-          owners: this.signers.slice(1).map((s) => s.address),
-          threshold: 1,
-        };
+      ? this.getPrimarySafeAccountConfig()
+      : this.getSecondarySafeAccountConfig();
   }
 
   /**

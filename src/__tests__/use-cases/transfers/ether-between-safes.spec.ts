@@ -27,13 +27,10 @@ beforeAll(async () => {
     chainId: BigInt(1),
     txServiceUrl: transactionService.baseUri,
   });
-  eoaSigner = new ethers.Wallet(
-    privateKeys[0],
-    new ethers.InfuraProvider(
-      configuration.chain.name,
-      process.env.INFURA_API_KEY,
-    ),
-  );
+  const { chain, rpc } = configuration;
+  const provider = new ethers.InfuraProvider(chain.name, rpc.apiKey);
+
+  eoaSigner = new ethers.Wallet(privateKeys[0], provider);
   primarySafeSdkInstance = await new SafesRepository(
     privateKeys[0],
   ).getSdkInstance(SafeType.PRIMARY);

@@ -2,17 +2,13 @@ import { configuration } from '@/config/configuration';
 import { logger } from '@/logging/logger';
 import { InfuraProvider, JsonRpcApiProvider, Wallet, ethers } from 'ethers';
 
-const { INFURA_API_KEY } = process.env;
-
 export class EOARepository {
   private readonly provider: InfuraProvider;
   private readonly refillThreshold = 0.01;
 
   constructor() {
-    this.provider = new ethers.InfuraProvider(
-      configuration.chain.name,
-      INFURA_API_KEY,
-    );
+    const { chain, rpc } = configuration;
+    this.provider = new ethers.InfuraProvider(chain.name, rpc.apiKey);
   }
 
   async equilibrateBalances(): Promise<void> {

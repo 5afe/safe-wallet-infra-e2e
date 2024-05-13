@@ -1,11 +1,9 @@
-import { Block, ethers } from 'ethers';
+import { Block, InfuraProvider } from 'ethers';
 import { configuration } from '@/config/configuration';
 
 describe('Blockchain read-only', () => {
-  const provider = new ethers.InfuraProvider(
-    configuration.chain.name,
-    process.env.INFURA_API_KEY,
-  );
+  const { chain, rpc } = configuration;
+  const provider = new InfuraProvider(chain.name, rpc.apiKey);
 
   it('should get the last block', async () => {
     const block: Block | null = await provider.getBlock('latest');
