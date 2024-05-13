@@ -2,10 +2,8 @@ import { configuration } from '@/config/configuration';
 import { InfuraProvider, Wallet } from 'ethers';
 
 describe('Wallet actions', () => {
-  const provider = new InfuraProvider(
-    configuration.chain.name,
-    process.env.INFURA_API_KEY,
-  );
+  const { chain, rpc } = configuration;
+  const provider = new InfuraProvider(chain.name, rpc.apiKey);
   const wallets = configuration.privateKeys.map(
     (pk) => new Wallet(pk, provider),
   );

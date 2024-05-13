@@ -9,19 +9,17 @@ import { SafesRepository } from '@/domain/safes/safes-repository';
 import Safe from '@safe-global/protocol-kit';
 import { Wallet, ethers } from 'ethers';
 
-let eoaSigner: Wallet;
+let signer: Wallet;
 let primarySafeSdkInstance: Safe;
 let cgw: ClientGatewayClient;
 
 const { privateKeys, walletAddresses } = configuration;
-const SEPOLIA_CHAIN_ID = '11155111';
 
 beforeAll(async () => {
   cgw = new ClientGatewayClient();
-  eoaSigner = new ethers.Wallet(
-    privateKeys[0],
-    new ethers.InfuraProvider('sepolia', process.env.INFURA_API_KEY),
-  );
+  const { chain, rpc } = configuration;
+  const provider = new ethers.InfuraProvider(chain.name, rpc.apiKey);
+  signer = new ethers.Wallet(privateKeys[0], provider);
   primarySafeSdkInstance = await new SafesRepository(
     privateKeys[0],
   ).getSdkInstance(SafeType.PRIMARY);
@@ -29,9 +27,10 @@ beforeAll(async () => {
 
 describe('Delegates: list/create/delete Safe delegates', () => {
   it('create a delegate for a given Safe', async () => {
+    const { chainId } = configuration.chain;
     const safeAddress = await primarySafeSdkInstance.getAddress();
     const createDelegateDto: CGWCreateDelegateDTO = {
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegate: walletAddresses[1],
       delegator: walletAddresses[0],
       safe: safeAddress,
@@ -40,7 +39,7 @@ describe('Delegates: list/create/delete Safe delegates', () => {
     };
 
     const delegatesBefore = await cgw.getDelegates({
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegator: walletAddresses[0],
     });
 
@@ -58,7 +57,7 @@ describe('Delegates: list/create/delete Safe delegates', () => {
     await cgw.createDelegate(createDelegateDto);
 
     const delegatesAfter = await cgw.getDelegates({
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegator: walletAddresses[0],
     });
 
@@ -75,9 +74,10 @@ describe('Delegates: list/create/delete Safe delegates', () => {
   });
 
   it('create delegate and delete it by delegator', async () => {
+    const { chainId } = configuration.chain;
     const safeAddress = await primarySafeSdkInstance.getAddress();
     const createDelegateDto: CGWCreateDelegateDTO = {
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegate: walletAddresses[1],
       delegator: walletAddresses[0],
       safe: safeAddress,
@@ -86,7 +86,7 @@ describe('Delegates: list/create/delete Safe delegates', () => {
     };
 
     const delegatesBefore = await cgw.getDelegates({
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegator: walletAddresses[0],
     });
 
@@ -104,7 +104,7 @@ describe('Delegates: list/create/delete Safe delegates', () => {
     await cgw.createDelegate(createDelegateDto);
 
     const delegatesAfter = await cgw.getDelegates({
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegator: walletAddresses[0],
     });
 
@@ -120,7 +120,7 @@ describe('Delegates: list/create/delete Safe delegates', () => {
     );
 
     const deleteDelegateDto: CGWDeleteDelegateDTO = {
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegate: walletAddresses[1],
       delegator: walletAddresses[0],
       signature: await buildSignature(walletAddresses[1]),
@@ -141,9 +141,10 @@ describe('Delegates: list/create/delete Safe delegates', () => {
   });
 
   it('create delegate and delete it by Safe address', async () => {
+    const { chainId } = configuration.chain;
     const safeAddress = await primarySafeSdkInstance.getAddress();
     const createDelegateDto: CGWCreateDelegateDTO = {
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegate: walletAddresses[1],
       delegator: walletAddresses[0],
       safe: safeAddress,
@@ -152,7 +153,7 @@ describe('Delegates: list/create/delete Safe delegates', () => {
     };
 
     const delegatesBefore = await cgw.getDelegates({
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegator: walletAddresses[0],
     });
 
@@ -170,7 +171,7 @@ describe('Delegates: list/create/delete Safe delegates', () => {
     await cgw.createDelegate(createDelegateDto);
 
     const delegatesAfter = await cgw.getDelegates({
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegator: walletAddresses[0],
     });
 
@@ -186,7 +187,7 @@ describe('Delegates: list/create/delete Safe delegates', () => {
     );
 
     const deleteDelegateDto: CGWDeleteDelegateDTO = {
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId,
       delegate: walletAddresses[1],
       safe: safeAddress,
       signature: await buildSignature(walletAddresses[1]),
@@ -210,25 +211,20 @@ describe('Delegates: list/create/delete Safe delegates', () => {
 const buildSignature = async (
   delegateAddress: `0x${string}`,
 ): Promise<string> => {
-  const domain = {
-    name: 'Safe Transaction Service',
-    version: '1.0',
-    chainId: SEPOLIA_CHAIN_ID,
-  };
-
+  const { chainId } = configuration.chain;
+  const domain = { name: 'Safe Transaction Service', version: '1.0', chainId };
   const types = {
     Delegate: [
       { name: 'delegateAddress', type: 'bytes32' },
       { name: 'totp', type: 'uint256' },
     ],
   };
-
   const message = {
     delegateAddress: ethers.zeroPadBytes(delegateAddress, 32),
     totp: getTotp(),
   };
 
-  return eoaSigner.signTypedData(domain, types, message);
+  return signer.signTypedData(domain, types, message);
 };
 
 const getTotp = (): number => {
