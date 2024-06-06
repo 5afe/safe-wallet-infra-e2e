@@ -83,8 +83,8 @@ describe('Transfers: receive/send native coins from/to EOA', () => {
     await retry(
       async () => {
         const historyTxs = await cgw.getHistory(safeAddress);
-        const newBalance = await sdkInstance.getBalance();
         expect(containsTransaction(historyTxs, tx.hash)).toBe(true);
+        const newBalance = await sdkInstance.getBalance();
         expect(newBalance).toEqual(safeBalance + amount);
       },
       10,
