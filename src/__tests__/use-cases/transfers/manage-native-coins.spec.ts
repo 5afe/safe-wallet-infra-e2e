@@ -80,12 +80,16 @@ describe('Transfers: receive/send native coins from/to EOA', () => {
       value: amount,
     });
 
-    await retry(async () => {
-      const historyTxs = await cgw.getHistory(safeAddress);
-      const newBalance = await sdkInstance.getBalance();
-      expect(containsTransaction(historyTxs, tx.hash)).toBe(true);
-      expect(newBalance).toEqual(safeBalance + amount);
-    });
+    await retry(
+      async () => {
+        const historyTxs = await cgw.getHistory(safeAddress);
+        expect(containsTransaction(historyTxs, tx.hash)).toBe(true);
+        const newBalance = await sdkInstance.getBalance();
+        expect(newBalance).toEqual(safeBalance + amount);
+      },
+      10,
+      10_000,
+    );
   });
 
   it.skip('should propose an ether transfer, check queue, and delete the proposed transaction', async () => {
