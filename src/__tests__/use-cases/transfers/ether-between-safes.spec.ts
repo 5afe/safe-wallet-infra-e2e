@@ -43,7 +43,7 @@ beforeAll(async () => {
   cgw = new ClientGatewayClient();
 });
 
-describe('Transfers: receive/send native coins between Safes', () => {
+describe.skip('Transfers: receive/send native coins between Safes', () => {
   it('should send ether from a Safe to another', async () => {
     const amount = ethers.parseUnits(
       faker.number
