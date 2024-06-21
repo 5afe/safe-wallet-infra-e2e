@@ -220,7 +220,7 @@ const buildSignature = async (
     ],
   };
   const message = {
-    delegateAddress: ethers.zeroPadBytes(delegateAddress, 32),
+    delegateAddress,
     totp: getTotp(),
   };
 
