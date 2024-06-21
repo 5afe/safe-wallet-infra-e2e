@@ -215,12 +215,12 @@ const buildSignature = async (
   const domain = { name: 'Safe Transaction Service', version: '1.0', chainId };
   const types = {
     Delegate: [
-      { name: 'delegateAddress', type: 'bytes32' },
+      { name: 'delegateAddress', type: 'address' },
       { name: 'totp', type: 'uint256' },
     ],
   };
   const message = {
-    delegateAddress: ethers.zeroPadBytes(delegateAddress, 32),
+    delegateAddress,
     totp: getTotp(),
   };
 

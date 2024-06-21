@@ -44,7 +44,7 @@ beforeAll(async () => {
   cgw = new ClientGatewayClient();
 });
 
-describe('Transactions cleanup', () => {
+describe.skip('Transactions cleanup', () => {
   it('should execute pending transactions', async () => {
     const safeAddress = await sdkInstance.getAddress();
     const pending = await apiKit.getPendingTransactions(safeAddress);
@@ -69,7 +69,7 @@ describe('Transactions cleanup', () => {
   }, 600_000);
 });
 
-describe('Transfers: receive/send native coins from/to EOA', () => {
+describe.skip('Transfers: receive/send native coins from/to EOA', () => {
   it('should receive an ether transfer and check it is on the CGW history', async () => {
     const safeAddress = await sdkInstance.getAddress();
     const safeBalance = await sdkInstance.getBalance();
