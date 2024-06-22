@@ -74,6 +74,27 @@ export interface CGWDelegate {
   label: string;
 }
 
+export interface SiweDto {
+  message: string;
+  signature: string;
+}
+
+export interface SiweMessage {
+  scheme: string;
+  domain: string;
+  address: string;
+  statement: string;
+  uri: string;
+  version: string;
+  chainId: number;
+  nonce: string;
+  issuedAt: Date;
+  expirationTime: Date;
+  notBefore: Date;
+  requestId: string;
+  resources: string[];
+}
+
 export class ClientGatewayClient {
   private readonly baseUri: string;
   private readonly chainId: string;
@@ -104,6 +125,25 @@ export class ClientGatewayClient {
   }> {
     const { data } = await httpClient.get(`${this.baseUri}/about`);
     return data;
+  }
+
+  // Auth endpoints
+
+  async getNonce(): Promise<{ nonce: string }> {
+    const { data } = await httpClient.get(`${this.baseUri}/v1/auth/nonce`);
+    return data;
+  }
+
+  async login(siweDto: SiweDto): Promise<void> {
+    try {
+      const { data } = await httpClient.post(
+        `${this.baseUri}/v1/auth/verify`,
+        siweDto,
+      );
+      return data;
+    } catch (err) {
+      throw err;
+    }
   }
 
   // Transaction endpoints
