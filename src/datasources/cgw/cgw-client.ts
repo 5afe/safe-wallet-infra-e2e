@@ -1,6 +1,8 @@
 import { configuration } from '@/config/configuration';
 import { httpClient } from '@/datasources/http/axios-http-client';
+import { faker } from '@faker-js/faker';
 import { SafeSignature } from '@safe-global/safe-core-sdk-types';
+import { SiweMessage } from 'siwe';
 
 export interface CGWTransactionItem {
   type: 'TRANSACTION';
@@ -74,6 +76,21 @@ export interface CGWDelegate {
   label: string;
 }
 
+export interface SiweDto {
+  message: string;
+  signature: string;
+}
+
+export interface CGWCreateAccountDto {
+  address: string;
+}
+
+export interface CGWAccount {
+  accountId: string;
+  groupId: string | null;
+  address: string;
+}
+
 export class ClientGatewayClient {
   private readonly baseUri: string;
   private readonly chainId: string;
@@ -83,7 +100,7 @@ export class ClientGatewayClient {
     this.chainId = configuration.chain.chainId;
   }
 
-  // Heath check endpoints
+  // Health check endpoints
 
   async getLiveness(): Promise<{ status: string }> {
     const { data } = await httpClient.get(`${this.baseUri}/health/live`);
@@ -104,6 +121,58 @@ export class ClientGatewayClient {
   }> {
     const { data } = await httpClient.get(`${this.baseUri}/about`);
     return data;
+  }
+
+  // Account endpoints
+
+  async createAccount(
+    accessToken: string,
+    createAccountDto: CGWCreateAccountDto,
+  ): Promise<CGWAccount> {
+    const { data } = await httpClient.post(
+      `${this.baseUri}/v1/accounts`,
+      createAccountDto,
+      { headers: { Cookie: accessToken } },
+    );
+    return data;
+  }
+
+  async deleteAccount(accessToken: string, address: string): Promise<void> {
+    await httpClient.delete(`${this.baseUri}/v1/accounts/${address}`, {
+      headers: { Cookie: accessToken },
+    });
+  }
+
+  // Auth endpoints
+
+  createSiweMessage(address, nonce) {
+    const siweMessage = new SiweMessage({
+      domain: configuration.siwe.domain,
+      address,
+      statement: faker.lorem.sentence(),
+      uri: faker.internet.url({ appendSlash: false }),
+      version: '1',
+      chainId: Number(configuration.chain.chainId),
+      nonce,
+    });
+    return siweMessage.prepareMessage();
+  }
+
+  async getNonce(): Promise<{ nonce: string }> {
+    const { data } = await httpClient.get(`${this.baseUri}/v1/auth/nonce`);
+    return data;
+  }
+
+  async login(siweDto: SiweDto): Promise<string | undefined> {
+    try {
+      const { headers } = await httpClient.post(
+        `${this.baseUri}/v1/auth/verify`,
+        siweDto,
+      );
+      return headers['set-cookie']?.[0];
+    } catch (err) {
+      throw err;
+    }
   }
 
   // Transaction endpoints
