@@ -14,7 +14,7 @@ export const configuration = {
     process.env.THIRD_PRIVATE_KEY as `0x${string}`,
   ],
   rpc: {
-    apiKey: process.env.INFURA_API_KEY,
+    apiKey: process.env.ALCHEMY_API_KEY,
   },
   siwe: {
     domain: 'safe',

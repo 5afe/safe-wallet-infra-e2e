@@ -29,9 +29,9 @@ beforeAll(async () => {
   });
   eoaSigner = new ethers.Wallet(
     privateKeys[0],
-    new ethers.InfuraProvider(
+    new ethers.AlchemyProvider(
       configuration.chain.name,
-      process.env.INFURA_API_KEY,
+      process.env.ALCHEMY_API_KEY,
     ),
   );
 

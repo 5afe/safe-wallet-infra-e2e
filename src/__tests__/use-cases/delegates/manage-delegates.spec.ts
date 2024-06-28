@@ -18,7 +18,7 @@ const { privateKeys, walletAddresses } = configuration;
 beforeAll(async () => {
   cgw = new ClientGatewayClient();
   const { chain, rpc } = configuration;
-  const provider = new ethers.InfuraProvider(chain.name, rpc.apiKey);
+  const provider = new ethers.AlchemyProvider(chain.name, rpc.apiKey);
   signer = new ethers.Wallet(privateKeys[0], provider);
   primarySafeSdkInstance = await new SafesRepository(
     privateKeys[0],

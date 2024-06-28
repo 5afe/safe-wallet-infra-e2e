@@ -28,7 +28,7 @@ beforeAll(async () => {
     txServiceUrl: transactionService.baseUri,
   });
   const { chain, rpc } = configuration;
-  const provider = new ethers.InfuraProvider(chain.name, rpc.apiKey);
+  const provider = new ethers.AlchemyProvider(chain.name, rpc.apiKey);
 
   eoaSigner = new ethers.Wallet(privateKeys[0], provider);
   primarySafeSdkInstance = await new SafesRepository(

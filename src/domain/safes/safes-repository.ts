@@ -15,7 +15,7 @@ export class SafesRepository {
 
   constructor(mainPrivateKey: `0x${string}`) {
     const { chain, rpc, privateKeys } = configuration;
-    this.provider = new ethers.InfuraProvider(chain.name, rpc.apiKey);
+    this.provider = new ethers.AlchemyProvider(chain.name, rpc.apiKey);
     const signerOrProvider = new ethers.Wallet(mainPrivateKey, this.provider);
     this.adapter = new EthersAdapter({ ethers, signerOrProvider });
     this.signers = privateKeys.map((pk) => new Wallet(pk, this.provider));
