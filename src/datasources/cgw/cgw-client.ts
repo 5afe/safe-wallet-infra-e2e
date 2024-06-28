@@ -81,22 +81,6 @@ export interface SiweDto {
   signature: string;
 }
 
-export interface CGWSiweMessage {
-  scheme: string;
-  domain: string;
-  address: string;
-  statement: string;
-  uri: string;
-  version: string;
-  chainId: number;
-  nonce: string;
-  issuedAt: Date;
-  expirationTime: Date;
-  notBefore: Date;
-  requestId: string;
-  resources: string[];
-}
-
 export interface CGWCreateAccountDto {
   address: string;
 }
