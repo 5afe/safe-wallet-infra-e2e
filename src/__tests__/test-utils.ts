@@ -17,6 +17,7 @@ export async function retry(
   maxAttempts: number = 40,
   delayMs: number = 10_000,
 ) {
+  await milliseconds(5_000); // Wait 5s for the first execution, then retry every delayMs
   let attempt = 1;
   const execute = async () => {
     try {
