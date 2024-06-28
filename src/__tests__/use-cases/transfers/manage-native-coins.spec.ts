@@ -44,7 +44,7 @@ beforeAll(async () => {
   cgw = new ClientGatewayClient();
 });
 
-describe.skip('Transactions cleanup', () => {
+describe('Transactions cleanup', () => {
   it('should execute pending transactions', async () => {
     const safeAddress = await sdkInstance.getAddress();
     const pending = await apiKit.getPendingTransactions(safeAddress);
@@ -69,7 +69,7 @@ describe.skip('Transactions cleanup', () => {
   }, 600_000);
 });
 
-describe.skip('Transfers: receive/send native coins from/to EOA', () => {
+describe('Transfers: receive/send native coins from/to EOA', () => {
   it('should receive an ether transfer and check it is on the CGW history', async () => {
     const safeAddress = await sdkInstance.getAddress();
     const safeBalance = await sdkInstance.getBalance();
@@ -80,16 +80,12 @@ describe.skip('Transfers: receive/send native coins from/to EOA', () => {
       value: amount,
     });
 
-    await retry(
-      async () => {
-        const historyTxs = await cgw.getHistory(safeAddress);
-        expect(containsTransaction(historyTxs, tx.hash)).toBe(true);
-        const newBalance = await sdkInstance.getBalance();
-        expect(newBalance).toEqual(safeBalance + amount);
-      },
-      10,
-      10_000,
-    );
+    await retry(async () => {
+      const historyTxs = await cgw.getHistory(safeAddress);
+      expect(containsTransaction(historyTxs, tx.hash)).toBe(true);
+      const newBalance = await sdkInstance.getBalance();
+      expect(newBalance).toEqual(safeBalance + amount);
+    });
   });
 
   it.skip('should propose an ether transfer, check queue, and delete the proposed transaction', async () => {
