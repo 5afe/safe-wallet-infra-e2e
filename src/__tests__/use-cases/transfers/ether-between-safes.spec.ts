@@ -28,7 +28,7 @@ beforeAll(async () => {
     txServiceUrl: transactionService.baseUri,
   });
   const { chain, rpc } = configuration;
-  const provider = new ethers.InfuraProvider(chain.name, rpc.apiKey);
+  const provider = new ethers.AlchemyProvider(chain.name, rpc.apiKey);
 
   eoaSigner = new ethers.Wallet(privateKeys[0], provider);
   primarySafeSdkInstance = await new SafesRepository(
@@ -43,7 +43,7 @@ beforeAll(async () => {
   cgw = new ClientGatewayClient();
 });
 
-describe.skip('Transfers: receive/send native coins between Safes', () => {
+describe('Transfers: receive/send native coins between Safes', () => {
   it('should send ether from a Safe to another', async () => {
     const amount = ethers.parseUnits(
       faker.number

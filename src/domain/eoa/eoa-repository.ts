@@ -1,14 +1,14 @@
 import { configuration } from '@/config/configuration';
 import { logger } from '@/logging/logger';
-import { InfuraProvider, JsonRpcApiProvider, Wallet, ethers } from 'ethers';
+import { AlchemyProvider, JsonRpcApiProvider, Wallet, ethers } from 'ethers';
 
 export class EOARepository {
-  private readonly provider: InfuraProvider;
+  private readonly provider: AlchemyProvider;
   private readonly refillThreshold = 0.01;
 
   constructor() {
     const { chain, rpc } = configuration;
-    this.provider = new ethers.InfuraProvider(chain.name, rpc.apiKey);
+    this.provider = new ethers.AlchemyProvider(chain.name, rpc.apiKey);
   }
 
   async equilibrateBalances(): Promise<void> {

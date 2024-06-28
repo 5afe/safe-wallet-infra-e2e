@@ -1,9 +1,9 @@
-import { Block, InfuraProvider } from 'ethers';
 import { configuration } from '@/config/configuration';
+import { AlchemyProvider, Block } from 'ethers';
 
 describe('Blockchain read-only', () => {
   const { chain, rpc } = configuration;
-  const provider = new InfuraProvider(chain.name, rpc.apiKey);
+  const provider = new AlchemyProvider(chain.name, rpc.apiKey);
 
   it('should get the last block', async () => {
     const block: Block | null = await provider.getBlock('latest');

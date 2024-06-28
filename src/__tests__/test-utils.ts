@@ -14,9 +14,10 @@ export async function milliseconds(milliseconds: number): Promise<void> {
  */
 export async function retry(
   fn: () => void,
-  maxAttempts: number = 120,
-  delayMs: number = 2000,
+  maxAttempts: number = 40,
+  delayMs: number = 10_000,
 ) {
+  await milliseconds(5_000); // Wait 5s for the first execution, then retry every delayMs
   let attempt = 1;
   const execute = async () => {
     try {
