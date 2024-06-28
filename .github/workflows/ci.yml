@@ -35,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+      INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
       PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       WALLET_ADDRESS: ${{ secrets.WALLET_ADDRESS }}
       SECOND_PRIVATE_KEY: ${{ secrets.SECOND_PRIVATE_KEY }}
@@ -54,6 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+      INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
       PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       WALLET_ADDRESS: ${{ secrets.WALLET_ADDRESS }}
       SECOND_PRIVATE_KEY: ${{ secrets.SECOND_PRIVATE_KEY }}
