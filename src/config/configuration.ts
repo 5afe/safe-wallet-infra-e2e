@@ -6,7 +6,7 @@ export const configuration = {
     name: 'sepolia',
   },
   clientGateway: {
-    baseUri: 'http://localhost:4000',
+    baseUri: 'https://safe-client.staging.5afe.dev',
   },
   privateKeys: [
     process.env.PRIVATE_KEY as `0x${string}`,
@@ -15,6 +15,9 @@ export const configuration = {
   ],
   rpc: {
     apiKey: process.env.INFURA_API_KEY,
+  },
+  siwe: {
+    domain: 'safe',
   },
   transactionService: {
     baseUri: 'https://safe-transaction-sepolia.staging.5afe.dev/api',
