@@ -137,6 +137,14 @@ export class ClientGatewayClient {
     return data;
   }
 
+  async getAccount(accessToken: string, address: string): Promise<CGWAccount> {
+    const { data } = await httpClient.get(
+      `${this.baseUri}/v1/accounts/${address}`,
+      { headers: { Cookie: accessToken } },
+    );
+    return data;
+  }
+
   async deleteAccount(accessToken: string, address: string): Promise<void> {
     await httpClient.delete(`${this.baseUri}/v1/accounts/${address}`, {
       headers: { Cookie: accessToken },
