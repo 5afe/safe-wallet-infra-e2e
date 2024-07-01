@@ -33,21 +33,29 @@ describe('CGW Auth tests', () => {
     accessToken = await getAccessToken(cgw);
   });
 
-  let account: CGWAccount;
+  let created: CGWAccount;
 
   describe('auth endpoints', () => {
-    it('should create an account', async () => {
-      const createAccountDto = {
-        address: walletAddresses[0],
-      };
+    it('should create an account, get and delete', async () => {
+      try {
+        const createAccountDto = {
+          address: walletAddresses[0],
+        };
 
-      account = await cgw.createAccount(accessToken, createAccountDto);
+        created = await cgw.createAccount(accessToken, createAccountDto);
 
-      expect(account).toBeDefined();
-    });
+        expect(created).toBeDefined();
+        expect(created.address).toBe(createAccountDto.address);
 
-    it('should delete an account', async () => {
-      await cgw.deleteAccount(accessToken, account.address);
+        const account = await cgw.getAccount(accessToken, created.address);
+        expect(account.address).toBe(created.address);
+        expect(account.accountId).toBe(created.accountId);
+      } finally {
+        await cgw.deleteAccount(accessToken, created.address);
+        await expect(
+          cgw.getAccount(accessToken, created.address),
+        ).rejects.toThrow();
+      }
     });
   });
 });
