@@ -6,7 +6,8 @@ export const configuration = {
     name: 'sepolia',
   },
   clientGateway: {
-    baseUri: 'https://safe-client.staging.5afe.dev',
+    baseUri: 'http://localhost:4000',
+    // baseUri: 'https://safe-client.staging.5afe.dev',
   },
   privateKeys: [
     process.env.PRIVATE_KEY as `0x${string}`,

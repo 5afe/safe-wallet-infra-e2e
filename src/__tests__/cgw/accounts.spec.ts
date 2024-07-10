@@ -61,13 +61,13 @@ describe('CGW Auth tests', () => {
       expect(dataTypes).toStrictEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            dataTypeId: expect.any(String),
+            id: expect.any(String),
             name: 'CounterfactualSafes',
             description: expect.any(String),
             isActive: expect.any(Boolean),
           }),
           expect.objectContaining({
-            dataTypeId: expect.any(String),
+            id: expect.any(String),
             name: 'AddressBook',
             description: expect.any(String),
             isActive: expect.any(Boolean),
@@ -89,10 +89,12 @@ describe('CGW Auth tests', () => {
         expect(account.accountId).toBe(created.accountId);
         const dataTypes = await cgw.getDataTypes();
         const upsertAccountDataSettingsDto = {
-          accountDataSettings: dataTypes.map((dt) => ({
-            dataTypeName: dt.name,
-            enabled: true,
-          })),
+          accountDataSettings: dataTypes
+            .filter((dt) => dt.isActive)
+            .map((dt) => ({
+              id: dt.id,
+              enabled: true,
+            })),
         };
 
         const actual = await cgw.upsertAccountDataSettings(
@@ -102,30 +104,24 @@ describe('CGW Auth tests', () => {
         );
 
         expect(actual).toStrictEqual(
-          expect.arrayContaining([
-            {
-              dataTypeName: dataTypes[0].name,
-              dataTypeDescription: dataTypes[0].description,
-              enabled: true,
-            },
-            {
-              dataTypeName: dataTypes[1].name,
-              dataTypeDescription: dataTypes[1].description,
-              enabled: true,
-            },
-            {
-              dataTypeName: dataTypes[2].name,
-              dataTypeDescription: dataTypes[2].description,
-              enabled: true,
-            },
-          ]),
+          expect.arrayContaining(
+            dataTypes
+              .filter((dt) => dt.isActive)
+              .map((dt) => ({
+                name: dt.name,
+                description: dt.description,
+                enabled: true,
+              })),
+          ),
         );
 
         const anotherUpsertAccountDataSettingsDto = {
-          accountDataSettings: dataTypes.map((dt) => ({
-            dataTypeName: dt.name,
-            enabled: false,
-          })),
+          accountDataSettings: dataTypes
+            .filter((dt) => dt.isActive)
+            .map((dt) => ({
+              id: dt.id,
+              enabled: false,
+            })),
         };
 
         const updated = await cgw.upsertAccountDataSettings(
@@ -135,23 +131,15 @@ describe('CGW Auth tests', () => {
         );
 
         expect(updated).toStrictEqual(
-          expect.arrayContaining([
-            {
-              dataTypeName: dataTypes[0].name,
-              dataTypeDescription: dataTypes[0].description,
-              enabled: false,
-            },
-            {
-              dataTypeName: dataTypes[1].name,
-              dataTypeDescription: dataTypes[1].description,
-              enabled: false,
-            },
-            {
-              dataTypeName: dataTypes[2].name,
-              dataTypeDescription: dataTypes[2].description,
-              enabled: false,
-            },
-          ]),
+          expect.arrayContaining(
+            dataTypes
+              .filter((dt) => dt.isActive)
+              .map((dt) => ({
+                name: dt.name,
+                description: dt.description,
+                enabled: false,
+              })),
+          ),
         );
       } finally {
         await cgw.deleteAccount(accessToken, address);

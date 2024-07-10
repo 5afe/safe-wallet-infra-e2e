@@ -92,7 +92,7 @@ export interface CGWAccount {
 }
 
 export interface CGWDataType {
-  dataTypeId: string;
+  id: string;
   name: string;
   description: string | null;
   isActive: boolean;
@@ -100,7 +100,7 @@ export interface CGWDataType {
 
 export interface CGWUpsertAccountDataSettingsDto {
   accountDataSettings: {
-    dataTypeName: string;
+    id: string;
     enabled: boolean;
   }[];
 }
