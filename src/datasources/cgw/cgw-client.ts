@@ -91,6 +91,20 @@ export interface CGWAccount {
   address: string;
 }
 
+export interface CGWDataType {
+  id: string;
+  name: string;
+  description: string | null;
+  isActive: boolean;
+}
+
+export interface CGWUpsertAccountDataSettingsDto {
+  accountDataSettings: {
+    id: string;
+    enabled: boolean;
+  }[];
+}
+
 export class ClientGatewayClient {
   private readonly baseUri: string;
   private readonly chainId: string;
@@ -149,6 +163,29 @@ export class ClientGatewayClient {
     await httpClient.delete(`${this.baseUri}/v1/accounts/${address}`, {
       headers: { Cookie: accessToken },
     });
+  }
+
+  async getDataTypes(): Promise<CGWDataType[]> {
+    const { data } = await httpClient.get(
+      `${this.baseUri}/v1/accounts/data-types`,
+    );
+    return data;
+  }
+
+  async upsertAccountDataSettings(
+    accessToken: string,
+    address: string,
+    dto: CGWUpsertAccountDataSettingsDto,
+  ): Promise<void> {
+    const { data } = await httpClient.put(
+      `${this.baseUri}/v1/accounts/${address}/data-settings`,
+      dto,
+      {
+        headers: { Cookie: accessToken },
+      },
+    );
+
+    return data;
   }
 
   // Auth endpoints
