@@ -76,7 +76,7 @@ describe('CGW Auth tests', () => {
       );
     });
 
-    it('should create an account, set its data settings twice, and delete the account', async () => {
+    it('should create an account, set its data settings twice, get them, and delete the account', async () => {
       const createAccountDto = { address: walletAddresses[0] };
       const { address } = createAccountDto;
 
@@ -131,6 +131,23 @@ describe('CGW Auth tests', () => {
         );
 
         expect(updated).toStrictEqual(
+          expect.arrayContaining(
+            dataTypes
+              .filter((dt) => dt.isActive)
+              .map((dt) => ({
+                name: dt.name,
+                description: dt.description,
+                enabled: false,
+              })),
+          ),
+        );
+
+        const accountDataSettings = await cgw.getAccountDataSettings(
+          accessToken,
+          address,
+        );
+
+        expect(accountDataSettings).toStrictEqual(
           expect.arrayContaining(
             dataTypes
               .filter((dt) => dt.isActive)

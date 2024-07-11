@@ -172,6 +172,20 @@ export class ClientGatewayClient {
     return data;
   }
 
+  async getAccountDataSettings(
+    accessToken: string,
+    address: string,
+  ): Promise<void> {
+    const { data } = await httpClient.get(
+      `${this.baseUri}/v1/accounts/${address}/data-settings`,
+      {
+        headers: { Cookie: accessToken },
+      },
+    );
+
+    return data;
+  }
+
   async upsertAccountDataSettings(
     accessToken: string,
     address: string,
