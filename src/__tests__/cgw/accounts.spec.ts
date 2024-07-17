@@ -46,7 +46,7 @@ describe('CGW Auth tests', () => {
         expect(created.address).toBe(address);
         const account = await cgw.getAccount(accessToken, created.address);
         expect(account.address).toBe(created.address);
-        expect(account.accountId).toBe(created.accountId);
+        expect(account.id).toBe(created.id);
       } finally {
         await cgw.deleteAccount(accessToken, address);
       }
@@ -86,7 +86,7 @@ describe('CGW Auth tests', () => {
         expect(created.address).toBe(address);
         const account = await cgw.getAccount(accessToken, created.address);
         expect(account.address).toBe(created.address);
-        expect(account.accountId).toBe(created.accountId);
+        expect(account.id).toBe(created.id);
         const dataTypes = await cgw.getDataTypes();
         const upsertAccountDataSettingsDto = {
           accountDataSettings: dataTypes
