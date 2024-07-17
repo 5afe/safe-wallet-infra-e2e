@@ -100,7 +100,7 @@ export interface CGWDataType {
 
 export interface CGWUpsertAccountDataSettingsDto {
   accountDataSettings: {
-    id: string;
+    dataTypeId: string;
     enabled: boolean;
   }[];
 }

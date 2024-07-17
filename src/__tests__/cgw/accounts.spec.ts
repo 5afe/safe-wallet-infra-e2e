@@ -92,7 +92,7 @@ describe('CGW Auth tests', () => {
           accountDataSettings: dataTypes
             .filter((dt) => dt.isActive)
             .map((dt) => ({
-              id: dt.id,
+              dataTypeId: dt.id,
               enabled: true,
             })),
         };
@@ -108,8 +108,7 @@ describe('CGW Auth tests', () => {
             dataTypes
               .filter((dt) => dt.isActive)
               .map((dt) => ({
-                name: dt.name,
-                description: dt.description,
+                dataTypeId: dt.id,
                 enabled: true,
               })),
           ),
@@ -119,7 +118,7 @@ describe('CGW Auth tests', () => {
           accountDataSettings: dataTypes
             .filter((dt) => dt.isActive)
             .map((dt) => ({
-              id: dt.id,
+              dataTypeId: dt.id,
               enabled: false,
             })),
         };
@@ -135,8 +134,7 @@ describe('CGW Auth tests', () => {
             dataTypes
               .filter((dt) => dt.isActive)
               .map((dt) => ({
-                name: dt.name,
-                description: dt.description,
+                dataTypeId: dt.id,
                 enabled: false,
               })),
           ),
@@ -152,8 +150,7 @@ describe('CGW Auth tests', () => {
             dataTypes
               .filter((dt) => dt.isActive)
               .map((dt) => ({
-                name: dt.name,
-                description: dt.description,
+                dataTypeId: dt.id,
                 enabled: false,
               })),
           ),
