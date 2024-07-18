@@ -82,11 +82,11 @@ export interface SiweDto {
 }
 
 export interface CGWCreateAccountDto {
-  address: string;
+  address: `0x${string}`;
 }
 
 export interface CGWAccount {
-  accountId: string;
+  id: string;
   groupId: string | null;
   address: string;
 }
@@ -98,11 +98,13 @@ export interface CGWDataType {
   isActive: boolean;
 }
 
+export interface CGWAccountDataSetting {
+  dataTypeId: string;
+  enabled: boolean;
+}
+
 export interface CGWUpsertAccountDataSettingsDto {
-  accountDataSettings: {
-    dataTypeId: string;
-    enabled: boolean;
-  }[];
+  accountDataSettings: CGWAccountDataSetting[];
 }
 
 export class ClientGatewayClient {
