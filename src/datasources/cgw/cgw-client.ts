@@ -107,6 +107,27 @@ export interface CGWUpsertAccountDataSettingsDto {
   accountDataSettings: CGWAccountDataSetting[];
 }
 
+export interface CGWCounterfactualSafe {
+  chainId: string;
+  creator: string;
+  fallbackHandler: string;
+  owners: string[];
+  predictedAddress: string;
+  saltNonce: string;
+  singletonAddress: string;
+  threshold: number;
+}
+
+export interface CGWCreateCounterfactualSafeDTO {
+  chainId: string;
+  fallbackHandler: string;
+  owners: string[];
+  predictedAddress: string;
+  saltNonce: string;
+  singletonAddress: string;
+  threshold: number;
+}
+
 export class ClientGatewayClient {
   private readonly baseUri: string;
   private readonly chainId: string;
@@ -234,6 +255,34 @@ export class ClientGatewayClient {
     } catch (err) {
       throw err;
     }
+  }
+
+  // Counterfactual Safes endpoints
+
+  async createCounterfactualSafe(
+    accessToken: string,
+    address: string,
+    createCounterfactualSafeDto: CGWCreateCounterfactualSafeDTO,
+  ): Promise<CGWCounterfactualSafe> {
+    const res = await httpClient.put(
+      `${this.baseUri}/v1/accounts/${address}/counterfactual-safes`,
+      createCounterfactualSafeDto,
+      { headers: { Cookie: accessToken } },
+    );
+    return res.data;
+  }
+
+  async getCounterfactualSafe(
+    accessToken: string,
+    address: string,
+    chainId: string,
+    predictedAddress: string,
+  ): Promise<CGWCounterfactualSafe> {
+    const { data } = await httpClient.get(
+      `${this.baseUri}/v1/accounts/${address}/counterfactual-safes/${chainId}/${predictedAddress}`,
+      { headers: { Cookie: accessToken } },
+    );
+    return data;
   }
 
   // Transaction endpoints
