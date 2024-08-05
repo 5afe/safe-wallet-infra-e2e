@@ -285,6 +285,39 @@ export class ClientGatewayClient {
     return data;
   }
 
+  async getCounterfactualSafes(
+    accessToken: string,
+    address: string,
+  ): Promise<CGWCounterfactualSafe[]> {
+    const { data } = await httpClient.get(
+      `${this.baseUri}/v1/accounts/${address}/counterfactual-safes`,
+      { headers: { Cookie: accessToken } },
+    );
+    return data;
+  }
+
+  async deleteCounterfactualSafe(
+    accessToken: string,
+    address: string,
+    chainId: string,
+    predictedAddress: string,
+  ): Promise<void> {
+    await httpClient.delete(
+      `${this.baseUri}/v1/accounts/${address}/counterfactual-safes/${chainId}/${predictedAddress}`,
+      { headers: { Cookie: accessToken } },
+    );
+  }
+
+  async deleteCounterfactualSafes(
+    accessToken: string,
+    address: string,
+  ): Promise<void> {
+    await httpClient.delete(
+      `${this.baseUri}/v1/accounts/${address}/counterfactual-safes`,
+      { headers: { Cookie: accessToken } },
+    );
+  }
+
   // Transaction endpoints
 
   async getHistory(safeAddress: string): Promise<CGWTransactionItem[]> {

@@ -99,15 +99,98 @@ describe('CGW Counterfactual Safes tests', () => {
         );
         expect(counterfactualSafe).toStrictEqual(created);
       } finally {
+        await cgw.deleteCounterfactualSafe(
+          accessToken,
+          address,
+          createCounterfactualSafeDto.chainId,
+          createCounterfactualSafeDto.predictedAddress,
+        );
         await cgw.deleteAccount(accessToken, address);
-        // await cgw.deleteCounterfactualSafe(accessToken, address);
-        // TODO: Implement deletion of counterfactual safe
       }
-
-      // TODO: check 404 returned after deletion
-      // await expect(
-      //   cgw.getCounterfactualSafe(accessToken, address),
-      // ).rejects.toThrow('Request failed with status code 404');
+      await expect(
+        cgw.getCounterfactualSafe(
+          accessToken,
+          address,
+          createCounterfactualSafeDto.chainId,
+          createCounterfactualSafeDto.predictedAddress,
+        ),
+      ).rejects.toThrow('Request failed with status code 404');
     });
+  });
+
+  it('should create several counterfactual safes, get them by account, and delete them by account', async () => {
+    const createAccountDto = { address: walletAddresses[0] };
+    const { address } = createAccountDto;
+
+    try {
+      createdAccount = await cgw.createAccount(accessToken, createAccountDto);
+      expect(createdAccount).toBeDefined();
+      expect(createdAccount.address).toBe(address);
+      const account = await cgw.getAccount(accessToken, createdAccount.address);
+      expect(account.address).toBe(createdAccount.address);
+      expect(account.id).toBe(createdAccount.id);
+
+      // Enable setting for all data types
+      const dataTypes = await cgw.getDataTypes();
+      const upsertAccountDataSettingsDto = {
+        accountDataSettings: dataTypes
+          .filter((dt) => dt.isActive)
+          .map((dt) => ({
+            dataTypeId: dt.id,
+            enabled: true,
+          })),
+      };
+
+      await cgw.upsertAccountDataSettings(
+        accessToken,
+        address,
+        upsertAccountDataSettingsDto,
+      );
+
+      const createCounterfactualSafeDto = {
+        chainId: configuration.chain.chainId,
+        fallbackHandler: faker.finance.ethereumAddress(),
+        owners: [walletAddresses[0]],
+        predictedAddress: faker.finance.ethereumAddress(),
+        saltNonce: '1',
+        singletonAddress: faker.finance.ethereumAddress(),
+        threshold: faker.number.int({ min: 1, max: 10 }),
+      };
+
+      const counterfactualSafes = await Promise.all(
+        Array.from({ length: 3 }).map(async () => {
+          const predictedAddress = faker.finance.ethereumAddress();
+          return cgw.createCounterfactualSafe(accessToken, address, {
+            ...createCounterfactualSafeDto,
+            chainId: faker.string.numeric(6),
+            predictedAddress,
+          });
+        }),
+      );
+
+      expect(counterfactualSafes).toHaveLength(3);
+
+      const fetchedCounterfactualSafes = await cgw.getCounterfactualSafes(
+        accessToken,
+        address,
+      );
+
+      const sortByPredictedAddress = (
+        a: CGWCounterfactualSafe,
+        b: CGWCounterfactualSafe,
+      ) => a.predictedAddress.localeCompare(b.predictedAddress);
+
+      expect(
+        fetchedCounterfactualSafes.sort(sortByPredictedAddress),
+      ).toStrictEqual(counterfactualSafes.sort(sortByPredictedAddress));
+    } finally {
+      await cgw.deleteCounterfactualSafes(accessToken, address);
+      const afterDeletionCounterfactualSafes = await cgw.getCounterfactualSafes(
+        accessToken,
+        address,
+      );
+      expect(afterDeletionCounterfactualSafes).toHaveLength(0);
+      await cgw.deleteAccount(accessToken, address);
+    }
   });
 });
