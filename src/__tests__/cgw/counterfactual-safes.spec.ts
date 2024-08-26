@@ -92,7 +92,6 @@ describe('CGW Counterfactual Safes tests', () => {
         expect(created).toBeDefined();
         expect(created.creator).toBe(address);
         const counterfactualSafe = await cgw.getCounterfactualSafe(
-          accessToken,
           created.creator,
           created.chainId,
           created.predictedAddress,
@@ -109,7 +108,6 @@ describe('CGW Counterfactual Safes tests', () => {
       }
       await expect(
         cgw.getCounterfactualSafe(
-          accessToken,
           address,
           createCounterfactualSafeDto.chainId,
           createCounterfactualSafeDto.predictedAddress,
@@ -170,10 +168,8 @@ describe('CGW Counterfactual Safes tests', () => {
 
       expect(counterfactualSafes).toHaveLength(3);
 
-      const fetchedCounterfactualSafes = await cgw.getCounterfactualSafes(
-        accessToken,
-        address,
-      );
+      const fetchedCounterfactualSafes =
+        await cgw.getCounterfactualSafes(address);
 
       const sortByPredictedAddress = (
         a: CGWCounterfactualSafe,
@@ -185,10 +181,8 @@ describe('CGW Counterfactual Safes tests', () => {
       ).toStrictEqual(counterfactualSafes.sort(sortByPredictedAddress));
     } finally {
       await cgw.deleteCounterfactualSafes(accessToken, address);
-      const afterDeletionCounterfactualSafes = await cgw.getCounterfactualSafes(
-        accessToken,
-        address,
-      );
+      const afterDeletionCounterfactualSafes =
+        await cgw.getCounterfactualSafes(address);
       expect(afterDeletionCounterfactualSafes).toHaveLength(0);
       await cgw.deleteAccount(accessToken, address);
     }

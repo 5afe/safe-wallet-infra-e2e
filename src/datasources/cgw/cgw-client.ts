@@ -273,25 +273,21 @@ export class ClientGatewayClient {
   }
 
   async getCounterfactualSafe(
-    accessToken: string,
     address: string,
     chainId: string,
     predictedAddress: string,
   ): Promise<CGWCounterfactualSafe> {
     const { data } = await httpClient.get(
       `${this.baseUri}/v1/accounts/${address}/counterfactual-safes/${chainId}/${predictedAddress}`,
-      { headers: { Cookie: accessToken } },
     );
     return data;
   }
 
   async getCounterfactualSafes(
-    accessToken: string,
     address: string,
   ): Promise<CGWCounterfactualSafe[]> {
     const { data } = await httpClient.get(
       `${this.baseUri}/v1/accounts/${address}/counterfactual-safes`,
-      { headers: { Cookie: accessToken } },
     );
     return data;
   }
