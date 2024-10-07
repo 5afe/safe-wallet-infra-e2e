@@ -4,7 +4,7 @@ import { AlchemyProvider, JsonRpcApiProvider, Wallet, ethers } from 'ethers';
 
 export class EOARepository {
   private readonly provider: AlchemyProvider;
-  private readonly refillThreshold = 0.01;
+  private readonly refillThreshold = 0.1;
 
   constructor() {
     const { chain, rpc } = configuration;
