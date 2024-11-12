@@ -37,8 +37,9 @@ describe('CGW Auth tests', () => {
 
   describe('auth endpoints', () => {
     it('should create an account, get it, and delete it', async () => {
-      const createAccountDto = { address: walletAddresses[0] };
-      const { address } = createAccountDto;
+      const address = walletAddresses[0];
+      const name = 'TestAccount';
+      const createAccountDto = { address, name };
 
       try {
         created = await cgw.createAccount(accessToken, createAccountDto);
@@ -54,6 +55,36 @@ describe('CGW Auth tests', () => {
       await expect(cgw.getAccount(accessToken, address)).rejects.toThrow(
         'Request failed with status code 404',
       );
+    });
+
+    it('should fail to create an account if the name format is not correct', async () => {
+      const address = walletAddresses[0];
+      const name = 'Invalid Test Account that contains spaces';
+      const createAccountDto = { address, name };
+
+      await expect(
+        cgw.createAccount(accessToken, createAccountDto),
+      ).rejects.toThrow('Request failed with status code 422');
+    });
+
+    it('should fail to create an account if the name format is not correct (2)', async () => {
+      const address = walletAddresses[0];
+      const name = 'D'; // Name is too short
+      const createAccountDto = { address, name };
+
+      await expect(
+        cgw.createAccount(accessToken, createAccountDto),
+      ).rejects.toThrow('Request failed with status code 422');
+    });
+
+    it('should fail to create an account if the name format is not correct (2)', async () => {
+      const address = walletAddresses[0];
+      const name = 'D'.repeat(21); // Name is too long
+      const createAccountDto = { address, name };
+
+      await expect(
+        cgw.createAccount(accessToken, createAccountDto),
+      ).rejects.toThrow('Request failed with status code 422');
     });
 
     it('should get the available data types', async () => {
@@ -77,8 +108,9 @@ describe('CGW Auth tests', () => {
     });
 
     it('should create an account, set its data settings twice, get them, and delete the account', async () => {
-      const createAccountDto = { address: walletAddresses[0] };
-      const { address } = createAccountDto;
+      const address = walletAddresses[0];
+      const name = 'TestAccount';
+      const createAccountDto = { address, name };
 
       try {
         created = await cgw.createAccount(accessToken, createAccountDto);
