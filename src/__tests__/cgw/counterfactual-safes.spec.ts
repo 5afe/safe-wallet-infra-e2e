@@ -43,8 +43,9 @@ describe('CGW Counterfactual Safes tests', () => {
 
   describe('counterfactual safes endpoints', () => {
     it('should create a counterfactual safe, get it, and delete it', async () => {
-      const createAccountDto = { address: walletAddresses[0] };
-      const { address } = createAccountDto;
+      const address = walletAddresses[0];
+      const name = 'TestAccount';
+      const createAccountDto = { address, name };
       const predictedAddress = faker.finance.ethereumAddress();
       const createCounterfactualSafeDto = {
         chainId: configuration.chain.chainId,
@@ -117,8 +118,9 @@ describe('CGW Counterfactual Safes tests', () => {
   });
 
   it('should create several counterfactual safes, get them by account, and delete them by account', async () => {
-    const createAccountDto = { address: walletAddresses[0] };
-    const { address } = createAccountDto;
+    const address = walletAddresses[0];
+    const name = 'TestAccount';
+    const createAccountDto = { address, name };
 
     try {
       createdAccount = await cgw.createAccount(accessToken, createAccountDto);
