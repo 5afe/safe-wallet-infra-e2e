@@ -1063,15 +1063,12 @@
     semver "^7.6.3"
     viem "^2.21.8"
 
-"@safe-global/safe-core-sdk-types@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@safe-global/safe-core-sdk-types/-/safe-core-sdk-types-3.0.1.tgz#ec6d053b1648ab80c8d6909cf9d6b0be90b3d0f1"
-  integrity sha512-2AdlK6GJ5YEZXrQwFsHFwQScnNo3OonF3O6KzVeMc0/7OAuOTYBzKq1jzju2Eck6Z8UNPUinlHoF2Zb2pvTKhw==
+"@safe-global/safe-core-sdk-types@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-core-sdk-types/-/safe-core-sdk-types-5.1.0.tgz#af8d877b9af231242d023c7182f78ff4223bc3f4"
+  integrity sha512-UzXR4zWmVzux25FcIm4H049QhZZpVpIBL5HE+V0p5gHpArZROL+t24fZmsKUf403CtBxIJM5zZSVQL0nFJi+IQ==
   dependencies:
-    "@safe-global/safe-deployments" "^1.28.0"
-    ethers "^6.7.1"
-    web3-core "^1.10.3"
-    web3-utils "^1.10.3"
+    abitype "^1.0.2"
 
 "@safe-global/safe-deployments@^1.28.0":
   version "1.30.0"
