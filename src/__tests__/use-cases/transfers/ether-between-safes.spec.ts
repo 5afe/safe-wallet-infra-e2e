@@ -11,7 +11,7 @@ import { faker } from '@faker-js/faker';
 import SafeApiKit from '@safe-global/api-kit';
 import Safe from '@safe-global/protocol-kit';
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
-import { Wallet, ethers } from 'ethers';
+import { TransactionResponse, Wallet, ethers } from 'ethers';
 
 let eoaSigner: Wallet;
 let primarySafeSdkInstance: Safe;
@@ -98,7 +98,11 @@ describe('Transfers: receive/send native coins between Safes', () => {
     const safeTransaction = await apiKit.getTransaction(safeTxHash);
     const executeTxResponse =
       await primarySafeSdkInstance.executeTransaction(safeTransaction);
-    await executeTxResponse.transactionResponse?.wait();
+    if (executeTxResponse.transactionResponse) {
+      await (
+        executeTxResponse.transactionResponse as TransactionResponse
+      ).wait();
+    }
 
     // Check the CGW history contains the transaction
     await retry(async () => {

@@ -58,7 +58,11 @@ describe('Transactions cleanup', () => {
       const safeTransaction = await apiKit.getTransaction(tx.safeTxHash);
       const executeTxResponse =
         await sdkInstance.executeTransaction(safeTransaction);
-      await executeTxResponse.transactionResponse?.wait();
+      if (executeTxResponse.transactionResponse) {
+        await (
+          executeTxResponse.transactionResponse as TransactionResponse
+        ).wait();
+      }
 
       // Check the CGW history contains the transaction
       await retry(async () => {
@@ -196,7 +200,11 @@ describe('Transfers: receive/send native coins from/to EOA', () => {
     const safeTransaction = await apiKit.getTransaction(safeTxHash);
     const executeTxResponse =
       await sdkInstance.executeTransaction(safeTransaction);
-    await executeTxResponse.transactionResponse?.wait();
+    if (executeTxResponse.transactionResponse) {
+      await (
+        executeTxResponse.transactionResponse as TransactionResponse
+      ).wait();
+    }
 
     // Check the CGW history contains the transaction
     await retry(async () => {
