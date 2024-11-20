@@ -39,7 +39,6 @@ describe('CGW Address Books tests', () => {
   });
 
   let createdAccount: CGWAccount;
-  let addressBook: CGWAddressBook;
 
   describe('Address Books endpoints', () => {
     it('should create an Account, and fail to get its Address Book', async () => {
@@ -85,7 +84,7 @@ describe('CGW Address Books tests', () => {
       }
     });
 
-    it('should create an Account, create and Address Book and retrieve it', async () => {
+    it('should create an Account, create an AddressBookItem and retrieve the AddressBook', async () => {
       const address = walletAddresses[0];
       const name = 'TestAccount';
       const chainId = configuration.chain.chainId;
@@ -119,19 +118,23 @@ describe('CGW Address Books tests', () => {
           upsertAccountDataSettingsDto,
         );
 
-        const createAddressBookDto = {
-          name: 'TestAddressBook',
+        const createAddressBookItemDto = {
+          name: 'TestAddressBookItem',
           address: faker.finance.ethereumAddress(),
         };
-        await cgw.createAddressBook(
+        const item = await cgw.createAddressBookItem(
           accessToken,
           address,
           chainId,
-          createAddressBookDto,
+          createAddressBookItemDto,
         );
-      } catch (error) {
-        expect(error.response.data).toBe('Address Book not found');
-        expect(error.response.status).toBe(404);
+        expect(item).toBeDefined();
+        const addressBook = await cgw.getAddressBook(
+          accessToken,
+          address,
+          chainId,
+        );
+        expect(addressBook).toBeDefined();
       } finally {
         await cgw.deleteAccount(accessToken, address);
       }

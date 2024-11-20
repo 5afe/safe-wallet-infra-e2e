@@ -129,7 +129,7 @@ export interface CGWCounterfactualSafe {
   threshold: number;
 }
 
-export interface CGWCreateAddressBookDto {
+export interface CGWCreateAddressBookItemDto {
   name: string;
   address: string;
 }
@@ -287,15 +287,15 @@ export class ClientGatewayClient {
     return data;
   }
 
-  async createAddressBook(
+  async createAddressBookItem(
     accessToken: string,
     address: string,
     chainId: string,
-    createAddressBookDto: CGWCreateAddressBookDto,
+    createAddressBookItemDto: CGWCreateAddressBookItemDto,
   ): Promise<CGWAddressBook> {
     const { data } = await httpClient.post(
       `${this.baseUri}/v1/accounts/${address}/address-books/${chainId}`,
-      createAddressBookDto,
+      createAddressBookItemDto,
       { headers: { Cookie: accessToken } },
     );
     return data;
