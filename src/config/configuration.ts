@@ -7,6 +7,7 @@ export const configuration = {
   },
   clientGateway: {
     baseUri: 'https://safe-client.staging.5afe.dev',
+    // baseUri: 'http://localhost:4000',
   },
   privateKeys: [
     process.env.PRIVATE_KEY as `0x${string}`,

@@ -67,6 +67,7 @@ describe('CGW Counterfactual Safes tests', () => {
         );
         expect(account.address).toBe(createdAccount.address);
         expect(account.id).toBe(createdAccount.id);
+        expect(account.name).toBe(createdAccount.name);
 
         // Enable setting for all data types
         const dataTypes = await cgw.getDataTypes();
