@@ -301,6 +301,29 @@ export class ClientGatewayClient {
     return data;
   }
 
+  async deleteAddressBook(
+    accessToken: string,
+    address: string,
+    chainId: string,
+  ): Promise<void> {
+    await httpClient.delete(
+      `${this.baseUri}/v1/accounts/${address}/address-books/${chainId}`,
+      { headers: { Cookie: accessToken } },
+    );
+  }
+
+  async deleteAddressBookItem(
+    accessToken: string,
+    address: string,
+    chainId: string,
+    addressBookItemId: string,
+  ): Promise<void> {
+    await httpClient.delete(
+      `${this.baseUri}/v1/accounts/${address}/address-books/${chainId}/${addressBookItemId}`,
+      { headers: { Cookie: accessToken } },
+    );
+  }
+
   // Counterfactual Safes endpoints
 
   async createCounterfactualSafe(
