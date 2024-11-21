@@ -89,6 +89,7 @@ export interface CGWAccount {
   id: string;
   groupId: string | null;
   address: string;
+  name: string;
 }
 
 export interface CGWDataType {
@@ -107,6 +108,16 @@ export interface CGWUpsertAccountDataSettingsDto {
   accountDataSettings: CGWAccountDataSetting[];
 }
 
+export interface CGWAddressBook {
+  accountId: string;
+  chainId: string;
+  data: Array<{
+    id: string;
+    name: string;
+    address: string;
+  }>;
+}
+
 export interface CGWCounterfactualSafe {
   chainId: string;
   creator: string;
@@ -116,6 +127,11 @@ export interface CGWCounterfactualSafe {
   saltNonce: string;
   singletonAddress: string;
   threshold: number;
+}
+
+export interface CGWCreateAddressBookItemDto {
+  name: string;
+  address: string;
 }
 
 export interface CGWCreateCounterfactualSafeDTO {
@@ -255,6 +271,34 @@ export class ClientGatewayClient {
     } catch (err) {
       throw err;
     }
+  }
+
+  // Address Books endpoints
+
+  async getAddressBook(
+    accessToken: string,
+    address: string,
+    chainId: string,
+  ): Promise<CGWAddressBook> {
+    const { data } = await httpClient.get(
+      `${this.baseUri}/v1/accounts/${address}/address-books/${chainId}`,
+      { headers: { Cookie: accessToken } },
+    );
+    return data;
+  }
+
+  async createAddressBookItem(
+    accessToken: string,
+    address: string,
+    chainId: string,
+    createAddressBookItemDto: CGWCreateAddressBookItemDto,
+  ): Promise<CGWAddressBook> {
+    const { data } = await httpClient.post(
+      `${this.baseUri}/v1/accounts/${address}/address-books/${chainId}`,
+      createAddressBookItemDto,
+      { headers: { Cookie: accessToken } },
+    );
+    return data;
   }
 
   // Counterfactual Safes endpoints
