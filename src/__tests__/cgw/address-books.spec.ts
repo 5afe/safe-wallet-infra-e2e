@@ -1,11 +1,7 @@
 import { configuration } from '@/config/configuration';
-import {
-  CGWAccount,
-  CGWAddressBook,
-  ClientGatewayClient,
-} from '@/datasources/cgw/cgw-client';
+import { CGWAccount, ClientGatewayClient } from '@/datasources/cgw/cgw-client';
 import { faker } from '@faker-js/faker';
-import { ethers, Wallet } from 'ethers';
+import { ethers, getAddress, Wallet } from 'ethers';
 
 let signer: Wallet;
 let accessToken: string;
@@ -122,19 +118,54 @@ describe('CGW Address Books tests', () => {
           name: 'TestAddressBookItem',
           address: faker.finance.ethereumAddress(),
         };
+        const secondCreateAddressBookItemDto = {
+          name: 'SecondTestAddressBookItem',
+          address: faker.finance.ethereumAddress(),
+        };
         const item = await cgw.createAddressBookItem(
           accessToken,
           address,
           chainId,
           createAddressBookItemDto,
         );
-        expect(item).toBeDefined();
+        const secondItem = await cgw.createAddressBookItem(
+          accessToken,
+          address,
+          chainId,
+          secondCreateAddressBookItemDto,
+        );
+        expect(item).toStrictEqual({
+          id: expect.any(String),
+          name: createAddressBookItemDto.name,
+          address: getAddress(createAddressBookItemDto.address), // should be checksummed by the CGW
+        });
+        expect(secondItem).toStrictEqual({
+          id: expect.any(String),
+          name: secondCreateAddressBookItemDto.name,
+          address: getAddress(secondCreateAddressBookItemDto.address), // should be checksummed by the CGW
+        });
         const addressBook = await cgw.getAddressBook(
           accessToken,
           address,
           chainId,
         );
-        expect(addressBook).toBeDefined();
+        expect(addressBook).toStrictEqual({
+          id: expect.any(String),
+          accountId: account.id,
+          chainId,
+          data: [
+            {
+              id: '1',
+              name: 'TestAddressBookItem',
+              address: getAddress(createAddressBookItemDto.address), // should be checksummed by the CGW
+            },
+            {
+              id: '2',
+              name: 'SecondTestAddressBookItem',
+              address: getAddress(secondCreateAddressBookItemDto.address), // should be checksummed by the CGW
+            },
+          ],
+        });
       } finally {
         await cgw.deleteAccount(accessToken, address);
       }
