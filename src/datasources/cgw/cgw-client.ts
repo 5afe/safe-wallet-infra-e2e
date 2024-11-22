@@ -134,6 +134,11 @@ export interface CGWCreateAddressBookItemDto {
   address: string;
 }
 
+export interface CGWUpdateAddressBookItemDto {
+  name: string;
+  address: string;
+}
+
 export interface CGWCreateCounterfactualSafeDTO {
   chainId: string;
   fallbackHandler: string;
@@ -296,6 +301,21 @@ export class ClientGatewayClient {
     const { data } = await httpClient.post(
       `${this.baseUri}/v1/accounts/${address}/address-books/${chainId}`,
       createAddressBookItemDto,
+      { headers: { Cookie: accessToken } },
+    );
+    return data;
+  }
+
+  async updateAddressBookItem(
+    accessToken: string,
+    address: string,
+    chainId: string,
+    addressBookItemId: string,
+    updateAddressBookItemDto: CGWUpdateAddressBookItemDto,
+  ): Promise<CGWAddressBook> {
+    const { data } = await httpClient.put(
+      `${this.baseUri}/v1/accounts/${address}/address-books/${chainId}/${addressBookItemId}`,
+      updateAddressBookItemDto,
       { headers: { Cookie: accessToken } },
     );
     return data;

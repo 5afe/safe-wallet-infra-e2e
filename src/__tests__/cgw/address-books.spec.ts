@@ -407,4 +407,155 @@ describe('CGW Address Books tests', () => {
       await cgw.deleteAccount(accessToken, address);
     }
   });
+
+  it('should create an Account, create several AddressBookItems and modify the first and the latest', async () => {
+    const address = walletAddresses[0];
+    const name = 'TestAccount';
+    const chainId = configuration.chain.chainId;
+    const createAccountDto = { address, name };
+    try {
+      createdAccount = await cgw.createAccount(accessToken, createAccountDto);
+      expect(createdAccount).toBeDefined();
+      expect(createdAccount.address).toBe(address);
+      const account = await cgw.getAccount(accessToken, createdAccount.address);
+      expect(account.address).toBe(createdAccount.address);
+      expect(account.id).toBe(createdAccount.id);
+      expect(account.name).toBe(createdAccount.name);
+
+      // Enable setting for all data types
+      const dataTypes = await cgw.getDataTypes();
+      const upsertAccountDataSettingsDto = {
+        accountDataSettings: dataTypes
+          .filter((dt) => dt.isActive)
+          .map((dt) => ({
+            dataTypeId: dt.id,
+            enabled: true,
+          })),
+      };
+
+      await cgw.upsertAccountDataSettings(
+        accessToken,
+        address,
+        upsertAccountDataSettingsDto,
+      );
+
+      const createAddressBookItemDto = {
+        name: 'TestAddressBookItem',
+        address: faker.finance.ethereumAddress(),
+      };
+      const secondCreateAddressBookItemDto = {
+        name: 'SecondTestAddressBookItem',
+        address: faker.finance.ethereumAddress(),
+      };
+      const thirdCreateAddressBookItemDto = {
+        name: 'ThirdTestAddressBookItem',
+        address: faker.finance.ethereumAddress(),
+      };
+      await cgw.createAddressBookItem(
+        accessToken,
+        address,
+        chainId,
+        createAddressBookItemDto,
+      );
+      await cgw.createAddressBookItem(
+        accessToken,
+        address,
+        chainId,
+        secondCreateAddressBookItemDto,
+      );
+      await cgw.createAddressBookItem(
+        accessToken,
+        address,
+        chainId,
+        thirdCreateAddressBookItemDto,
+      );
+      const addressBook = await cgw.getAddressBook(
+        accessToken,
+        address,
+        chainId,
+      );
+      expect(addressBook).toStrictEqual({
+        id: expect.any(String),
+        accountId: account.id,
+        chainId,
+        data: [
+          {
+            id: '1',
+            name: 'TestAddressBookItem',
+            address: getAddress(createAddressBookItemDto.address),
+          },
+          {
+            id: '2',
+            name: 'SecondTestAddressBookItem',
+            address: getAddress(secondCreateAddressBookItemDto.address),
+          },
+          {
+            id: '3',
+            name: 'ThirdTestAddressBookItem',
+            address: getAddress(thirdCreateAddressBookItemDto.address),
+          },
+        ],
+      });
+
+      // Modify the first and the latest AddressBookItem
+      const updateAddressBookItemDto = {
+        name: 'UpdatedTestAddressBookItem',
+        address: faker.finance.ethereumAddress(),
+      };
+      const updateThirdAddressBookItemDto = {
+        name: 'UpdatedThirdTestAddressBookItem',
+        address: faker.finance.ethereumAddress(),
+      };
+      const item = await cgw.updateAddressBookItem(
+        accessToken,
+        address,
+        chainId,
+        '1',
+        updateAddressBookItemDto,
+      );
+      const thirdItem = await cgw.updateAddressBookItem(
+        accessToken,
+        address,
+        chainId,
+        '3',
+        updateThirdAddressBookItemDto,
+      );
+      expect(item).toStrictEqual({
+        id: expect.any(String),
+        name: 'UpdatedTestAddressBookItem',
+        address: getAddress(updateAddressBookItemDto.address),
+      });
+      expect(thirdItem).toStrictEqual({
+        id: expect.any(String),
+        name: 'UpdatedThirdTestAddressBookItem',
+        address: getAddress(updateThirdAddressBookItemDto.address),
+      });
+      expect(
+        await cgw.getAddressBook(accessToken, address, chainId),
+      ).toStrictEqual({
+        id: expect.any(String),
+        accountId: account.id,
+        chainId,
+        data: [
+          {
+            id: '1',
+            name: 'UpdatedTestAddressBookItem',
+            address: getAddress(updateAddressBookItemDto.address),
+          },
+          {
+            id: '2',
+            name: 'SecondTestAddressBookItem',
+            address: getAddress(secondCreateAddressBookItemDto.address),
+          },
+          {
+            id: '3',
+            name: 'UpdatedThirdTestAddressBookItem',
+            address: getAddress(updateThirdAddressBookItemDto.address),
+          },
+        ],
+      });
+    } finally {
+      await cgw.deleteAccount(accessToken, address);
+    }
+  });
 });
