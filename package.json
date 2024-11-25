@@ -36,7 +36,7 @@
     "ethers": "^6.13.4",
     "siwe": "^2.3.2",
     "ts-node": "^10.9.2",
-    "winston": "^3.11.0"
+    "winston": "^3.17.0"
   },
   "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }
