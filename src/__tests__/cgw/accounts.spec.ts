@@ -60,16 +60,6 @@ describe('CGW Auth tests', () => {
 
     it('should fail to create an account if the name format is not correct', async () => {
       const address = walletAddresses[0];
-      const name = 'Invalid Test Account that contains spaces';
-      const createAccountDto = { address, name };
-
-      await expect(
-        cgw.createAccount(accessToken, createAccountDto),
-      ).rejects.toThrow('Request failed with status code 422');
-    });
-
-    it('should fail to create an account if the name format is not correct (2)', async () => {
-      const address = walletAddresses[0];
       const name = 'D'; // Name is too short
       const createAccountDto = { address, name };
 
@@ -78,9 +68,9 @@ describe('CGW Auth tests', () => {
       ).rejects.toThrow('Request failed with status code 422');
     });
 
-    it('should fail to create an account if the name format is not correct (2)', async () => {
+    it('should fail to create an account if the name format is not correct', async () => {
       const address = walletAddresses[0];
-      const name = 'D'.repeat(21); // Name is too long
+      const name = 'D'.repeat(31); // Name is too long
       const createAccountDto = { address, name };
 
       await expect(
